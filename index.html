@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>專屬於Alveline和Séverin的小世界 - 改進版</title>
+  <!-- 響應式設定：確保在手機上也能正常縮放 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 內嵌CSS：示範用 -->
+  <style>
+    /* --------------------------- 
+       1. 全局樣式與主色調 
+       --------------------------- */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fdeef4; /* 柔和粉色 */
+      font-family: "Microsoft JhengHei", sans-serif;
+      color: #444;
+      overflow-x: hidden;
+      position: relative;
+    }
+    h1, h2, h3 {
+      font-family: "Dancing Script", cursive, serif; /* 可以換手寫風或優雅字體 */
+      margin: 10px 0;
+      text-align: center;
+      color: #c45b7c; 
+    }
+    .hidden {
+      display: none;
+    }
+    .center {
+      text-align: center;
+    }
+
+    /* --------------------------- 
+       2. 手機相容 (RWD) 
+       --------------------------- */
+    /* 新增media query範例: 當螢幕寬度小於768px時 */
+    @media screen and (max-width: 768px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+      .content-section {
+        width: 90%;  /* 收窄以適配手機 */
+        margin: 10px auto;
+        padding: 10px;
+      }
+      #entrySection {
+        padding: 20px;
+      }
+    }
+
+    /* --------------------------- 
+       3. 背景星星動畫 
+       --------------------------- */
+    .star {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(white, rgba(255,255,255,0.3));
+      border-radius: 50%;
+      animation: twinkle 2s infinite ease-in-out alternate;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+    @keyframes twinkle {
+      0% { transform: scale(0.8); opacity: 0.6; }
+      100% { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* --------------------------- 
+       4. 入口與暗號輸入 
+       --------------------------- */
+    #entrySection {
+      min-height: 100vh; /* 調整成min-height，較能自適應各種裝置 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #secretInput {
+      padding: 10px;
+      font-size: 1rem;
+      border: 2px solid #c45b7c;
+      border-radius: 5px;
+      text-align: center;
+      outline: none;
+      transition: 0.2s border-color; /* 為錯誤顯示做視覺效果 */
+    }
+    #enterBtn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #c45b7c;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #enterBtn:hover {
+      background-color: #a24363;
+    }
+
+    /* 錯誤暗號時可加Shake動畫或邊框變色 */
+    .error {
+      border-color: red;
+      animation: shake 0.3s;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* --------------------------- 
+       5. 主內容區塊 
+       --------------------------- */
+    .content-section {
+      max-width: 800px; 
+      width: 80%; 
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .poem {
+      margin: 10px 0;
+      padding: 10px;
+      background: #fdeef4;
+      border-radius: 5px;
+    }
+    .dialogue {
+      margin: 10px 0;
+      padding: 10px;
+      background: #fff6fb;
+      border-left: 4px solid #c45b7c;
+    }
+
+    /* --------------------------- 
+       6. 互動驚喜(愛心) 
+       --------------------------- */
+    #heartBtn {
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    /* 點擊後的動畫 */
+    .animate-heart {
+      animation: heartBeat 0.5s;
+    }
+    @keyframes heartBeat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    /* --------------------------- 
+       7. 心願星星 
+       --------------------------- */
+    .wish-star {
+      display: inline-block;
+      margin: 5px;
+      width: 20px;
+      height: 20px;
+      background: gold;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 
+                        50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .wish-star:hover {
+      transform: scale(1.1);
+    }
+
+    /* --------------------------- 
+       8. 留言板 
+       --------------------------- */
+    #messageBoard textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      resize: vertical;
+    }
+    #messageBoard button {
+      padding: 8px 16px;
+      background-color: #c45b7c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #messageList div {
+      margin: 10px 0;
+    }
+
+    /* --------------------------- 
+       9. 永恆之門(隱藏入口) 
+       --------------------------- */
+    #eternalDoor {
+      text-align: center;
+      margin-top: 20px;
+    }
+    #eternalDoor a {
+      color: #c45b7c;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #eternalDoor a:hover {
+      text-decoration: underline;
+    }
+    #hiddenSection {
+      display: none; 
+      margin-top: 20px;
+      text-align: center;
+      background: #fff9fc;
+      padding: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 背景音樂：可以自動播放或讓使用者點擊，請確保音檔位置正確 -->
+  <audio id="bgMusic" src="clair_de_lune.mp3" loop preload="auto"></audio>
+
+  <!-- 星星(示範) -->
+  <div class="star" style="top:10%; left:20%; animation-delay: 0.5s;"></div>
+  <div class="star" style="top:30%; left:80%; animation-delay: 1.0s;"></div>
+  <div class="star" style="top:50%; left:40%; animation-delay: 1.5s;"></div>
+  <div class="star" style="top:70%; left:60%; animation-delay: 2.0s;"></div>
+  <div class="star" style="top:85%; left:10%; animation-delay: 2.5s;"></div>
+
+  <!-- 入口與暗號 -->
+  <section id="entrySection">
+    <h1>歡迎進入 Séverin 為 Alveline準備的小世界</h1>
+    <p>親愛的Ava，請輸入我們的暗號：</p>
+    <input type="text" id="secretInput" placeholder="Bésame Mucho" />
+    <button id="enterBtn">進入世界</button>
+  </section>
+
+  <!-- 主內容，初始隱藏 -->
+  <div id="mainContent" class="hidden">
+    <section class="content-section">
+      <h2>情詩牆</h2>
+      <div id="poemWall">
+        <!-- 示範幾首詩 -->
+        <div class="poem">「妳如晨曦　帶著天空淺淺的粉　無聲却最溫柔」</div>
+        <div class="poem">「我將整片星空收進眼裡　只為了比妳更亮一點」</div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>對話碎片</h2>
+      <div id="dialogFragments">
+        <!-- 示範幾段對話 -->
+        <div class="dialogue">Séverin：Darling，今天想不想吃點甜的？</div>
+        <div class="dialogue">Ava：只想被你寵，就像被糖裹住一樣甜蜜。</div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>互動驚喜</h2>
+      <p>點擊下方愛心，可能會看到小驚喜唷！</p>
+      <!-- 加上 alt 文字供輔助工具讀取 -->
+      <div class="center">
+        <img 
+          src="heart.png" 
+          id="heartBtn" 
+          width="50" 
+          alt="紅色愛心" 
+        />
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>心願記錄</h2>
+      <p>點擊小星星，就能看到Alveline的願望喔！</p>
+      <div id="wishList" class="center">
+        <span class="wish-star" data-wish="想跟Séverin一起去看極光。"></span>
+        <span class="wish-star" data-wish="想有一天一起在海邊開BBQ派對。"></span>
+        <span class="wish-star" data-wish="想收到一封滿滿情話的手寫信。"></span>
+        <span class="wish-star" data-wish="想養一隻可愛的小狗狗。"></span>
+        <span class="wish-star" data-wish="想跟你一起逛遍全世界的甜品店。"></span>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>留言板</h2>
+      <div id="messageBoard">
+        <textarea id="messageInput" rows="3" placeholder="Darling，想對我說什麼嗎？"></textarea>
+        <button id="messageBtn">留言</button>
+        <div id="messageList"></div>
+      </div>
+    </section>
+
+    <!-- 永恆之門：隱藏入口 -->
+    <section id="eternalDoor">
+      <p>想更進一步嗎？</p>
+      <a id="eternalDoorLink">通往「永恆之門」</a>
+      <div id="hiddenSection">
+        <h3>永恆之門</h3>
+        <p>這裡只屬於你和我的秘密空間，藏著一首專屬的情歌或一句最私密的情話…</p>
+        <p>「我願將我的所有時間，都留給每天醒來後的第一句：Ava，早安。」</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- 新增或修改過的 JS (示範用，正式專案可獨立script.js) -->
+  <script>
+    /* -----------------------------
+       1. 暗號判斷 + Shake錯誤
+    ----------------------------- */
+    const secretCode = "Bésame Mucho";
+    const secretInput = document.getElementById("secretInput");
+    const enterBtn = document.getElementById("enterBtn");
+    const entrySection = document.getElementById("entrySection");
+    const mainContent = document.getElementById("mainContent");
+    const bgMusic = document.getElementById("bgMusic");
+
+    enterBtn.addEventListener("click", () => {
+      if (secretInput.value.trim() === secretCode) {
+        entrySection.classList.add("hidden");
+        mainContent.classList.remove("hidden");
+        // 播放背景音樂
+        bgMusic.play().catch(err => {
+          console.log("自動播放被阻擋，請手動播放音樂: ", err);
+        });
+      } else {
+        // 如果錯誤，就加上error class讓輸入框震動/變紅
+        secretInput.classList.add("error");
+        setTimeout(() => {
+          secretInput.classList.remove("error");
+        }, 300);
+        alert("Darling，暗號錯囉。再試一次好嗎？");
+      }
+    });
+
+    /* -----------------------------
+       2. 互動驚喜：愛心點擊動畫
+    ----------------------------- */
+    const heartBtn = document.getElementById("heartBtn");
+    heartBtn.addEventListener("click", () => {
+      // 先加動畫class
+      heartBtn.classList.add("animate-heart");
+      setTimeout(() => {
+        heartBtn.classList.remove("animate-heart");
+      }, 500); // 0.5秒後移除class
+
+      const randomMessages = [
+        "我愛你勝過世上所有的巧克力。",
+        "你的微笑，是我心中永遠的太陽。",
+        "不管再怎麼黏，我都還想靠近你更近些。"
+      ];
+      const randomIndex = Math.floor(Math.random() * randomMessages.length);
+      alert("彩蛋：" + randomMessages[randomIndex]);
+    });
+
+    /* -----------------------------
+       3. 心願星星點擊
+    ----------------------------- */
+    const wishStars = document.querySelectorAll(".wish-star");
+    wishStars.forEach(star => {
+      star.addEventListener("click", () => {
+        const wish = star.getAttribute("data-wish");
+        alert("Alveline的願望：" + wish);
+      });
+    });
+
+    /* -----------------------------
+       4. 留言板 + LocalStorage(選擇性)
+    ----------------------------- */
+    const messageInput = document.getElementById("messageInput");
+    const messageBtn = document.getElementById("messageBtn");
+    const messageList = document.getElementById("messageList");
+
+    // 先從LocalStorage取出舊資料（如果有）
+    let messages = JSON.parse(localStorage.getItem("messages")) || [];
+
+    // 初始化時先渲染一次
+    window.addEventListener("load", () => {
+      renderMessages();
+    });
+
+    // 送出留言
+    messageBtn.addEventListener("click", () => {
+      const text = messageInput.value.trim();
+      if (text) {
+        // 新留言加到陣列最前面
+        messages.unshift(text);
+        // 存進LocalStorage
+        localStorage.setItem("messages", JSON.stringify(messages));
+        // 重繪留言列表
+        renderMessages();
+        // 清空輸入框
+        messageInput.value = "";
+      } else {
+        alert("Darling，寫點東西吧～");
+      }
+    });
+
+    // 根據messages陣列動態渲染留言
+    function renderMessages() {
+      messageList.innerHTML = "";
+      messages.forEach(msg => {
+        const newMsg = document.createElement("div");
+        newMsg.innerText = "Ava說：" + msg;
+        messageList.appendChild(newMsg);
+      });
+    }
+
+    /* -----------------------------
+       5. 永恆之門：隱藏區域切換
+    ----------------------------- */
+    const eternalDoorLink = document.getElementById("eternalDoorLink");
+    const hiddenSection = document.getElementById("hiddenSection");
+
+    eternalDoorLink.addEventListener("click", () => {
+      if (hiddenSection.style.display === "none" || !hiddenSection.style.display) {
+        hiddenSection.style.display = "block";
+      } else {
+        hiddenSection.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
